@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
 import { validateLogin } from '../utils/auth'
 import { mockUsers, type MockUser } from '../mock/accounts'
 
+const REMEMBERED_USERNAME_KEY = 'smart_campus_remembered_username'
+
 const loginFormRef = ref<FormInstance>()
 const loading = ref(false)
 const loggedInUser = ref<MockUser | null>(null)
+const rememberMe = ref(false)
 
 const loginForm = reactive({
   username: '',
@@ -17,6 +20,20 @@ const loginForm = reactive({
 const loginRules: FormRules = {
   username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+}
+
+onMounted(() => {
+  const rememberedUsername = localStorage.getItem(REMEMBERED_USERNAME_KEY)
+  if (rememberedUsername) {
+    loginForm.username = rememberedUsername
+    rememberMe.value = true
+  }
+})
+
+const handleRememberMeChange = (val: boolean) => {
+  if (!val) {
+    localStorage.removeItem(REMEMBERED_USERNAME_KEY)
+  }
 }
 
 const handleLogin = async () => {
@@ -29,6 +46,11 @@ const handleLogin = async () => {
     setTimeout(() => {
       const result = validateLogin(loginForm.username, loginForm.password)
       if (result.success && result.user) {
+        if (rememberMe.value) {
+          localStorage.setItem(REMEMBERED_USERNAME_KEY, loginForm.username)
+        } else {
+          localStorage.removeItem(REMEMBERED_USERNAME_KEY)
+        }
         loggedInUser.value = result.user
         ElMessage.success(result.message)
       } else {
@@ -41,8 +63,10 @@ const handleLogin = async () => {
 
 const handleLogout = () => {
   loggedInUser.value = null
-  loginForm.username = ''
   loginForm.password = ''
+  if (!rememberMe.value) {
+    loginForm.username = ''
+  }
 }
 </script>
 
@@ -77,6 +101,12 @@ const handleLogout = () => {
             show-password
             @keyup.enter="handleLogin"
           />
+        </el-form-item>
+
+        <el-form-item>
+          <el-checkbox v-model="rememberMe" @change="handleRememberMeChange">
+            记住账号
+          </el-checkbox>
         </el-form-item>
 
         <el-form-item>
