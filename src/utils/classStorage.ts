@@ -68,5 +68,6 @@ export const generateClassId = (): string => {
 
 export const isClassNameDuplicate = (name: string, excludeId?: string): boolean => {
   const classes = getClasses()
-  return classes.some(c => c.name === name && c.id !== excludeId)
+  const trimmedName = name.trim()
+  return classes.some(c => c.name.trim() === trimmedName && c.id !== excludeId)
 }

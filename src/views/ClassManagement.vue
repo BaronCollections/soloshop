@@ -35,12 +35,13 @@ const formRules: FormRules = {
     { required: true, message: '请输入班级名称', trigger: 'blur' },
     {
       validator: (_rule, value, callback) => {
-        if (!value) {
+        if (!value || !value.trim()) {
           callback()
           return
         }
+        const trimmedValue = value.trim()
         const excludeId = dialogType.value === 'edit' ? classForm.id : undefined
-        if (isClassNameDuplicate(value, excludeId)) {
+        if (isClassNameDuplicate(trimmedValue, excludeId)) {
           callback(new Error('班级名称已存在，请重新输入'))
         } else {
           callback()
@@ -154,10 +155,11 @@ const handleSubmit = async () => {
 
     submitLoading.value = true
     setTimeout(() => {
+      const trimmedName = classForm.name.trim()
       if (dialogType.value === 'add') {
         const newClass: ClassInfo = {
           id: generateClassId(),
-          name: classForm.name,
+          name: trimmedName,
           grade: classForm.grade,
           headTeacher: classForm.headTeacher,
           studentCount: classForm.studentCount!,
@@ -172,7 +174,7 @@ const handleSubmit = async () => {
         if (index > -1) {
           classList.value[index] = {
             ...classList.value[index],
-            name: classForm.name,
+            name: trimmedName,
             grade: classForm.grade,
             headTeacher: classForm.headTeacher,
             studentCount: classForm.studentCount!,
