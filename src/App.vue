@@ -1,29 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import Login from './views/Login.vue'
-import LeaveApplication from './views/LeaveApplication.vue'
-import type { MockUser } from './mock/accounts'
-
-const loggedInUser = ref<MockUser | null>(null)
-
-const showLeavePage = computed(() => {
-  return loggedInUser.value?.role === 'student'
-})
-
-const handleLoginSuccess = (user: MockUser) => {
-  loggedInUser.value = user
-}
-
-const handleLogout = () => {
-  loggedInUser.value = null
-}
+import ClassManagement from './views/ClassManagement.vue'
 </script>
 
 <template>
-  <LeaveApplication v-if="showLeavePage" />
-  <Login
-    v-else
-    @login-success="handleLoginSuccess"
-    @logout="handleLogout"
-  />
+  <ClassManagement />
 </template>
