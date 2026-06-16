@@ -5,6 +5,11 @@ import { User, Lock } from '@element-plus/icons-vue'
 import { validateLogin } from '../utils/auth'
 import { mockUsers, type MockUser } from '../mock/accounts'
 
+const emit = defineEmits<{
+  (e: 'login-success', user: MockUser): void
+  (e: 'logout'): void
+}>()
+
 const REMEMBERED_USERNAME_KEY = 'smart_campus_remembered_username'
 
 const loginFormRef = ref<FormInstance>()
@@ -53,6 +58,7 @@ const handleLogin = async () => {
         }
         loggedInUser.value = result.user
         ElMessage.success(result.message)
+        emit('login-success', result.user)
       } else {
         ElMessage.error(result.message)
       }
@@ -67,6 +73,7 @@ const handleLogout = () => {
   if (!rememberMe.value) {
     loginForm.username = ''
   }
+  emit('logout')
 }
 </script>
 
