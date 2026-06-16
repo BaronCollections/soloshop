@@ -1,7 +1,19 @@
 <script setup lang="ts">
-import ClassManagement from './views/ClassManagement.vue'
+import { computed } from 'vue'
+import { currentUser } from './stores/userStore'
+
+const isLoggedIn = computed(() => !!currentUser.value)
 </script>
 
 <template>
-  <ClassManagement />
+  <div id="app">
+    <router-view />
+  </div>
 </template>
+
+<style scoped>
+#app {
+  width: 100%;
+  min-height: 100vh;
+}
+</style>

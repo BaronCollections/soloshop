@@ -198,8 +198,13 @@ onMounted(() => {
         :data="filteredList"
         style="width: 100%"
         stripe
-        empty-text="暂无请假记录"
       >
+        <template #empty>
+          <el-empty
+            :description="leaveList.length === 0 ? '暂无请假记录' : '没有符合筛选条件的记录'"
+            :image-size="100"
+          />
+        </template>
         <el-table-column prop="id" label="申请编号" width="200">
           <template #default="{ row }">
             <span class="text-mono">{{ row.id.slice(0, 18) }}...</span>
